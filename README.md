@@ -3,6 +3,7 @@ In addition to existing Audacious's "track change" plugin, it keep count and his
 
 ##Needs / prerequisites
 It needs :
+- *ssv_ziks1* and *ssv_ziks2*, and make them executable with *chmod +x*
 - **Audacious** (of course :)).
 - The **audacious-plugins** package (it include the "song change" plugin that we need).
 - Enabling the *song change* plugin in Audacious, with following settings :

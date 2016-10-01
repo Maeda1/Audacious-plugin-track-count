@@ -1,0 +1,52 @@
+#!/bin/bash
+#Script pour compter les lectures de médias effectuées par Audacious (à l'image de Rhythmbox)
+
+###########
+#VARIABLES#
+###########
+
+#actu = fichier lu actuellement
+#nlig = numéro de la ligne existante
+#nlig2 = nlig +1 : numéro de ligne suivante
+#nlig3 = nlig2 +1 : numéro de ligne suivant nlig2
+#clig2 = contenu de la ligne suivant nlig
+#clig3 = contenu de la ligne suivant nlig2
+
+#######
+#DEBUT#
+#######
+
+#Récupération de la musique actuelle
+actu="`cat /tmp/zik_actuelle`"
+		#Récupération d'une éventuelle ligne déjà existante dans le fichier = déjà lue une fois au moins
+		nlig="$(cat ~/.audacious/play_count | grep -xn -m1 "$actu" | cut -d ":" -f1)"
+		#Si encore jamais lue = première fois
+		if [ "$nlig" == "" -a "$(echo "$actu")" != "-" ];then
+			#On remplit avec les infos
+			echo "$actu" >> ~/.audacious/play_count
+			echo "1" >> ~/.audacious/play_count
+			echo $(date "+%A %d %B %Y à %Hh%M") >> ~/.audacious/play_count
+		#Sinon on traite comme une ligne existante = déjà lue au moins une fois
+		else
+#pour vérif		echo $nlig
+			nlig2=$(echo "`expr $nlig + 1`")
+#pour vérif		echo $nlig2
+			clig2=$(sed -n $(echo "`expr $nlig + 1`"p) ~/.audacious/play_count)
+#pour vérif		echo $clig2
+			nlig3=$(echo "`expr $nlig + 2`")
+#pour vérif		echo $nlig3
+			clig3=$(sed -n $(echo "`expr $nlig + 2`"p) ~/.audacious/play_count)
+#pour vérif		echo $clig3
+#pour vérif		echo $(expr $clig2 + 1)
+			sed -i "$nlig2 s/$clig2/$(expr $clig2 + 1)/" ~/.audacious/play_count
+			sed -i "$nlig3 s|$clig3|$(date "+%A %d %B %Y à %Hh%M")|" ~/.audacious/play_count
+		fi
+#pour vérif		echo "OK"
+		#Nettoyage : si bug dans le fichier, on supprime les lignes "No song playing." ainsi que les deux suivantes :
+		sed -i '/^\No song playing./,+2 d' ~/.audacious/play_count
+
+#####
+#FIN#
+#####
+
+exit 0

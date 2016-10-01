@@ -1,0 +1,41 @@
+#!/bin/bash
+#Script pour actions au démarrage d'une piste avec Audacious (nécessite le plugin "changement de morceau" de Audacious
+#Actions actuelles :
+# 1/ Retenir le nom du morceau actuellement joué (pour traitement ultérieur par ssv_zik2
+# 2/ Afficher les stats du fichier actuellement en lecture par Audacious (à l'image de Rhythmbox)
+if [ ! -w ~/.audacious/ ];then
+	mkdir ~/.audacious
+fi
+echo $(audtool --current-song) > /tmp/zik_actuelle
+if [ "$(cat ~/.audacious/play_count | grep -xn -m1 "$(echo $(audtool --current-song))")" == "" ];then
+	notify-send -t 6000 -u low "`echo $(audtool --current-song)`" 2> /dev/null
+else
+	nblu=$(sed -n $(echo "`expr $(cat ~/.audacious/play_count | grep -xn -m1 "$(echo $(audtool --current-song))" | cut -d ":" -f1) + 1`"p) ~/.audacious/play_count)
+	tecoumin=$(echo "scale = 2;$(audtool --current-song-length-seconds) * $nblu / 60" | bc)
+	tecouheu=$(echo "scale = 2;$(audtool --current-song-length-seconds) * $nblu / 3600" | bc)
+	star=""
+	if (( $(echo "$tecouheu > 35" | bc -l) ));then
+		star="♥♥♥♥♥"
+	elif (( $(echo "$tecouheu > 30" | bc -l) ));then
+		star="♥♥♥♥"
+	elif (( $(echo "$tecouheu > 25" | bc -l) ));then
+		star="♥♥♥"
+	elif (( $(echo "$tecouheu > 20" | bc -l) ));then
+		star="♥♥"
+	elif (( $(echo "$tecouheu > 15" | bc -l) ));then
+		star="♥"
+	elif (( $(echo "$tecouheu > 10" | bc -l) ));then
+		star="★★★★★"
+	elif (( $(echo "$tecouheu > 5" | bc -l) ));then
+		star="★★★★"
+	elif (( $(echo "$tecouheu > 3" | bc -l) ));then
+		star="★★★"
+	elif (( $(echo "$tecouheu > 2" | bc -l) ));then
+		star="★★"
+	elif (( $(echo "$tecouheu > 1" | bc -l) ));then
+		star="★"
+	fi
+	notify-send -t 8000 -u low "`echo $(audtool --current-song)`" "Nombre de lectures ▸ $nblu\nDernière lecture ▸ $(sed -n $(echo "`expr $(cat ~/.audacious/play_count | grep -xn -m1 "$(echo $(audtool --current-song))" | cut -d ":" -f1) + 2`"p) ~/.audacious/play_count)\n◔Temps écoute ▸ $tecoumin minutes\n= $tecouheu heures $star" 2> /dev/null
+fi
+
+exit 0

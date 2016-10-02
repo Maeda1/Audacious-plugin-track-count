@@ -16,6 +16,13 @@
 #DEBUT#
 #######
 
+#Format date
+lang=en
+fdate=$(date "+%A, %B %d, %Y at %Ih%M%p")
+if [ $(echo $LANG | grep fr) ];then
+	fdate=$(date "+%A %d %B %Y à %Hh%M")
+fi
+
 #Récupération de la musique actuelle
 actu="`cat /tmp/zik_actuelle`"
 		#Récupération d'une éventuelle ligne déjà existante dans le fichier = déjà lue une fois au moins
@@ -25,7 +32,7 @@ actu="`cat /tmp/zik_actuelle`"
 			#On remplit avec les infos
 			echo "$actu" >> ~/.audacious/play_count
 			echo "1" >> ~/.audacious/play_count
-			echo $(date "+%A %d %B %Y à %Hh%M") >> ~/.audacious/play_count
+			echo "$fdate" >> ~/.audacious/play_count
 		#Sinon on traite comme une ligne existante = déjà lue au moins une fois
 		else
 #pour vérif		echo $nlig
@@ -39,7 +46,7 @@ actu="`cat /tmp/zik_actuelle`"
 #pour vérif		echo $clig3
 #pour vérif		echo $(expr $clig2 + 1)
 			sed -i "$nlig2 s/$clig2/$(expr $clig2 + 1)/" ~/.audacious/play_count
-			sed -i "$nlig3 s|$clig3|$(date "+%A %d %B %Y à %Hh%M")|" ~/.audacious/play_count
+			sed -i "$nlig3 s|$clig3|$fdate|" ~/.audacious/play_count
 		fi
 #pour vérif		echo "OK"
 		#Nettoyage : si bug dans le fichier, on supprime les lignes "No song playing." ainsi que les deux suivantes :

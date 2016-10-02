@@ -3,6 +3,23 @@
 #Actions actuelles :
 # 1/ Retenir le nom du morceau actuellement joué (pour traitement ultérieur par ssv_zik2
 # 2/ Afficher les stats du fichier actuellement en lecture par Audacious (à l'image de Rhythmbox)
+
+#Lang test
+lang=en
+pcount="Play count"
+lplayed="Last played"
+ttime="Listen time"
+sminutes="minutes"
+shours="hours"
+if [ $(echo $LANG | grep fr) ];then
+	lang=fr
+	pcount="Nombre de lectures"
+	lplayed="Dernière lecture"
+	ttime="Temps écoute"
+	sminutes="minutes"
+	shours="heures"
+fi
+
 if [ ! -w ~/.audacious/ ];then
 	mkdir ~/.audacious
 fi
@@ -35,7 +52,7 @@ else
 	elif (( $(echo "$tecouheu > 1" | bc -l) ));then
 		star="★"
 	fi
-	notify-send -t 8000 -u low "`echo $(audtool --current-song)`" "Nombre de lectures ▸ $nblu\nDernière lecture ▸ $(sed -n $(echo "`expr $(cat ~/.audacious/play_count | grep -xn -m1 "$(echo $(audtool --current-song))" | cut -d ":" -f1) + 2`"p) ~/.audacious/play_count)\n◔Temps écoute ▸ $tecoumin minutes\n= $tecouheu heures $star" 2> /dev/null
+	notify-send -t 8000 -u low "`echo $(audtool --current-song)`" "$pcount ▸ $nblu\n$lplayed ▸ $(sed -n $(echo "`expr $(cat ~/.audacious/play_count | grep -xn -m1 "$(echo $(audtool --current-song))" | cut -d ":" -f1) + 2`"p) ~/.audacious/play_count)\n◔$ttime ▸ $tecoumin $sminutes\n= $tecouheu $shours $star" 2> /dev/null
 fi
 
 exit 0
